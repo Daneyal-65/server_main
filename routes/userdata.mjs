@@ -1,5 +1,5 @@
 import express from "express";
-import db from "../db/conn.mjs";
+import db ,{close} from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
 
 const router = express.Router();
@@ -57,5 +57,5 @@ const router = express.Router();
  }
 
   })
-
+close.close()
 export default router;

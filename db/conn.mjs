@@ -4,7 +4,7 @@ dotenv.config();
 const connectionString = process.env.ATLAS_URI || "";
 
 const client = new MongoClient(connectionString);
-
+export const close = client
 let conn;
 try {
   conn = await client.connect();
