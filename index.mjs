@@ -20,6 +20,7 @@ app.use((err, _req, res, next) => {
 })
 
 // start the Express server
+
 app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
 });
