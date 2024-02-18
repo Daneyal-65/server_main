@@ -45,7 +45,7 @@ const router = express.Router();
     const {userName,password} = req.query;
     const user = await collection.findOne({userName,password});
     if(user){
-        res.json({message:"successfull",ok:true,redirectUrl:"/"});
+        res.json({message:"successfull",ok:true,redirectUrl:"/home"});
     }
     else{
         console.log("invalid input");
