@@ -1,61 +1,76 @@
 import express from "express";
-import db  from "../db/conn.mjs";
+import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-
-
 // signUP request handle
-  router.post("/signup", async (req, res) => {
-    try {
-      const collection = await db.collection("userdata");
-      const registerData = req.body;
-      registerData.date = new Date();
-      const result = await collection.insertOne(registerData);
-      result.redirectUrl='/login'
-      res.json(result); // Send back the inserted document
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+router.post("/signup", async (req, res) => {
+  try {
+    const collection = await db.collection("userdata");
+    const registerData = req.body;
+    registerData.date = new Date();
+    const result = await collection.insertOne(registerData);
+    result.redirectUrl = "/login";
+    res.json(result); // Send back the inserted document
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// get all the habits that user registered
+router.get("/gethabit", async (req, res) => {
+  try {
+    // Assuming db is your MongoDB connection
+    const collection = await db.collection("userhabits");
 
-  
-  router.post("/habit", async (req, res) => {
-    try {
-      const collection = await db.collection("userhabits");
-      const registerData = req.body;
-      registerData.date = new Date();
-      const result = await collection.insertOne(registerData);
-      res.json(result); // Send back the inserted document
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-//   
+    // Destructure userId from query parameters
+    const { userId } = req.query;
+
+    // Convert the cursor to an array to get the actual data
+    const result = await collection.find({ userId: userId }).toArray();
+
+    // Send the result as JSON response
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    // Handle errors appropriately, for now, just sending a generic response
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/habit", async (req, res) => {
+  try {
+    const collection = await db.collection("userhabits");
+    const registerData = req.body;
+    registerData.date = new Date();
+    const result = await collection.insertOne(registerData);
+    res.json(result); // Send back the inserted document
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+//
 
 // login request handled
 
-// 
-  router.get('/login',async (req,res)=>{
- try{
+//
+router.get("/login", async (req, res) => {
+  try {
     const collection = await db.collection("userdata");
-    const {userName,password} = req.query;
-    const user = await collection.findOne({userName,password});
-    if(user){
-        res.json({message:"successfull",ok:true,redirectUrl:"/home"});
+    const { userName, password } = req.query;
+    const user = await collection.findOne({ userName, password });
+    if (user) {
+      res.json({ userName, userId: user._id, ok: true, redirectUrl: "/home" });
+    } else {
+      console.log("invalid input");
+      res.json({ message: "username or password incorrect!!!", ok: false });
     }
-    else{
-        console.log("invalid input");
-        res.json({message:"username or password incorrect!!!",ok:false});
-    }
- }catch (err){
+  } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
- }
-
-  })
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 export default router;
