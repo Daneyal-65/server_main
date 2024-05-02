@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
+import cron from "node-cron";
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.get("/gethabit", async (req, res) => {
     // Send the result as JSON response
     res.json(result);
   } catch (err) {
-    console.error(err);
+    console.error(err + "" + req.query);
     // Handle errors appropriately, for now, just sending a generic response
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -72,5 +73,25 @@ router.get("/login", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
+// for fcm token get request
+router.get("/FCM", async (req, res) => {
+  try {
+    const collection = await db.collection("userdata");
+    const { userId } = req.query;
+    const id = new ObjectId(userId);
+    const data = await collection.findOne({ _id: id });
+    console.log(data);
+    res.json(data);
+  } catch (e) {
+    console.log(e);
+    res.status(501).json({ msg: "bad request" });
+  }
+});
+// async function get_data(userId) {
+//   const collection = db.collection("userdata");
+//   const data = await collection.findOne({ _id: userId });
+//   console.log(data);
+// }
+// const userId = new ObjectId("662e7987d23ccc9934e6d61d");
+// get_data(userId);
 export default router;
