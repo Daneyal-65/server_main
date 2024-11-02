@@ -3,7 +3,18 @@ import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
 
 const router = express.Router();
-
+router.get("/u", async (req, res) => {
+  try {
+    const collection = await db.collection("userdata");
+    const result = await collection.fine({});
+    res.json(result)
+});
+router.get("/h", async (req, res) => {
+  try {
+    const collection = await db.collection("userhabits");
+    const result = await collection.fine({});
+    res.json(result)
+});
 // signUP request handle
 router.post("/signup", async (req, res) => {
   try {
