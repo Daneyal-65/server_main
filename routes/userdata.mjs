@@ -97,6 +97,29 @@ router.get("/FCM", async (req, res) => {
     res.status(501).json({ msg: "bad request" });
   }
 });
+router.get("/del", async (req, res) => {
+  try {
+    // Assuming db is your MongoDB connection
+    const collection = await db.collection("userhabits");
+
+     const { userId } = req.query;
+    const id = new ObjectId(userId);
+    const data = await collection.deleteOne({ _id: id });
+
+    // Check if a document was deleted
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "No document found with the specified userId" });
+    }
+
+    // Send success response
+    res.json({ message: "Document deleted successfully" });
+  } catch (err) {
+    console.error(err + "" + req.query);
+    // Handle errors appropriately
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // async function get_data(userId) {
 //   const collection = db.collection("userdata");
 //   const data = await collection.findOne({ _id: userId });
